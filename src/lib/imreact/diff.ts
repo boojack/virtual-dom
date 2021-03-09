@@ -1,15 +1,9 @@
 import { IMElement, IMTextNode } from "./IMElement";
+import { Patch } from "./patch";
 
 const REPLACE = 0;
 const PROPS = 1;
 const TEXT = 2;
-
-interface Dict {
-  [key: string]: any;
-}
-interface Walker {
-  index: number;
-}
 
 export function diff(newElement: IMElement | IMTextNode, oldElement: IMElement | IMTextNode) {
   const walker: Walker = { index: 0 };
@@ -22,7 +16,7 @@ export function diff(newElement: IMElement | IMTextNode, oldElement: IMElement |
 
 function dfsWalk(newElement: IMElement | IMTextNode, oldElement: IMElement | IMTextNode, walker: Walker, patches: Dict) {
   const currentIndex = walker.index;
-  let currentPatch;
+  let currentPatch: Patch | null = null;
 
   if (!newElement || !oldElement) {
     currentPatch = {

@@ -1,17 +1,13 @@
 import { IMElement, IMTextNode } from "./IMElement";
 
+type PatchType = 0 | 1 | 2;
+
 const REPLACE = 0;
 const PROPS = 1;
 const TEXT = 2;
 
-interface Dict {
-  [key: string]: any;
-}
-interface Walker {
-  index: number;
-}
-interface Patch {
-  type: 0 | 1 | 2;
+export interface Patch {
+  type: PatchType;
 
   element?: IMElement | IMTextNode;
   text?: string;

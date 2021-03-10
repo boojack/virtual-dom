@@ -10,12 +10,20 @@ export interface Patch {
   props?: Dict;
 }
 
+/**
+ * apply the patches into the real dom
+ * @param element the real dom
+ * @param patches differs
+ */
 export function patch(element: Element, patches: Map<number, Patch[]>) {
   const walker: Walker = { index: 0 };
 
   dfsWalkPatches(element, walker, patches);
 }
 
+/**
+ * DFS traverse
+ */
 function dfsWalkPatches(element: Element, walker: Walker, patches: Map<number, Patch[]>) {
   if (patches.has(walker.index)) {
     for (const patch of patches.get(walker.index) as []) {
@@ -31,6 +39,9 @@ function dfsWalkPatches(element: Element, walker: Walker, patches: Map<number, P
   }
 }
 
+/**
+ * apply the patch to an element
+ */
 function applyPatch(element: Element, patch: Patch) {
   switch (patch.type) {
     case "CREATE": {

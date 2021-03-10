@@ -2,6 +2,8 @@ import { IMElement, IMTextNode } from "./lib/imreact/IMElement";
 import { diff } from "./lib/imreact/diff";
 import { patch } from "./lib/imreact/patch";
 
+// NOTE: Test case
+
 const helloText = new IMTextNode("hello world");
 const p = new IMElement("p", { class: "p" }, [helloText]);
 let div = new IMElement("div", { class: "text", id: "hhh" }, [p]);

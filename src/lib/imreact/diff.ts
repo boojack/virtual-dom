@@ -1,6 +1,12 @@
 import { IMElement, IMTextNode } from "./IMElement";
 import { Patch } from "./patch";
 
+/**
+ * figure out the differs between two vDOM
+ * @param newElement the boss vDOM
+ * @param oldElement the vDOM which will be replaced
+ * @returns patches Map<number, Patch[]>: the differs between two vDOM
+ */
 export function diff(newElement: IMElement | IMTextNode, oldElement: IMElement | IMTextNode) {
   const walker: Walker = { index: 0 };
   const patches = new Map<number, Patch[]>();
@@ -10,6 +16,13 @@ export function diff(newElement: IMElement | IMTextNode, oldElement: IMElement |
   return patches;
 }
 
+/**
+ * DFS traverse the whole vDOM
+ * @param newElement
+ * @param oldElement
+ * @param walker use for giving the current vDOM a union tag
+ * @param patches
+ */
 function dfsWalkDiffs(
   newElement: IMElement | IMTextNode,
   oldElement: IMElement | IMTextNode,
@@ -51,7 +64,7 @@ function dfsWalkDiffs(
     oldElement = oldElement as IMElement;
 
     const props = diffProps(newElement.props, oldElement.props);
-    if (!isEmptyObject(props)) {
+    if (!checkIsEmptyObject(props)) {
       currentPatches.push({
         type: "PROPS",
         props: props,
@@ -82,6 +95,9 @@ function dfsWalkDiffs(
   }
 }
 
+/**
+ * diff the vDOM props
+ */
 function diffProps(newProps: Dict, oldProps: Dict) {
   const diffes: Dict = {};
 
@@ -102,11 +118,12 @@ function diffProps(newProps: Dict, oldProps: Dict) {
   return diffes;
 }
 
-function isEmptyObject(ob: Object): boolean {
+// use as the function name says
+function checkIsEmptyObject(ob: Object): boolean {
   return Object.keys(ob).length === 0;
 }
 
-function checkHasNullElement(obs: (IMElement | IMTextNode)[]) {
+function checkHasNullElement(obs: (IMElement | IMTextNode)[]): boolean {
   for (const o of obs) {
     if (o === null || o === undefined) {
       return true;
@@ -116,7 +133,7 @@ function checkHasNullElement(obs: (IMElement | IMTextNode)[]) {
   return false;
 }
 
-function checkHasTextElement(obs: (IMElement | IMTextNode)[]) {
+function checkHasTextElement(obs: (IMElement | IMTextNode)[]): boolean {
   for (const o of obs) {
     if (o instanceof IMTextNode || o.hasOwnProperty("text")) {
       return true;
@@ -126,7 +143,7 @@ function checkHasTextElement(obs: (IMElement | IMTextNode)[]) {
   return false;
 }
 
-function checkIsBothElement(obs: (IMElement | IMTextNode)[]) {
+function checkIsBothElement(obs: (IMElement | IMTextNode)[]): boolean {
   let lastType = null;
 
   for (const o of obs) {

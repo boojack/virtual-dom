@@ -1,4 +1,5 @@
-import { IMElement, IMTextNode } from "./VElement";
+import { VElement } from "./VElement";
+import { VText } from "./VText";
 import { Patch } from "./patch";
 
 /**
@@ -7,7 +8,7 @@ import { Patch } from "./patch";
  * @param oldElement the vDOM which will be replaced
  * @returns patches Map<number, Patch[]>: the differs between two vDOM
  */
-export function diff(newElement: IMElement | IMTextNode, oldElement: IMElement | IMTextNode) {
+export function diff(newElement: VElement | VText, oldElement: VElement | VText) {
   const patches = new Map<number, Patch[]>();
 
   dfsWalkDiffs(newElement, oldElement, { index: 0 }, patches);
@@ -21,12 +22,7 @@ export function diff(newElement: IMElement | IMTextNode, oldElement: IMElement |
  * @param walker use for giving the current vDOM a union tag
  * @param patches
  */
-function dfsWalkDiffs(
-  newElement: IMElement | IMTextNode,
-  oldElement: IMElement | IMTextNode,
-  walker: Walker,
-  patches: Map<number, Patch[]>
-) {
+function dfsWalkDiffs(newElement: VElement | VText, oldElement: VElement | VText, walker: Walker, patches: Map<number, Patch[]>) {
   const currentIndex = walker.index;
   let currentPatches: Patch[] = diffElements(newElement, oldElement);
 
@@ -38,8 +34,8 @@ function dfsWalkDiffs(
   }
 
   if (checkIsBothElement([newElement, oldElement])) {
-    newElement = newElement as IMElement;
-    oldElement = oldElement as IMElement;
+    newElement = newElement as VElement;
+    oldElement = oldElement as VElement;
 
     const maxlen = Math.max(oldElement.children.length, newElement.children.length);
     const minlen = Math.min(oldElement.children.length, newElement.children.length);
@@ -59,7 +55,7 @@ function dfsWalkDiffs(
  * @param oldElement
  * @returns
  */
-function diffElements(newElement: IMElement | IMTextNode, oldElement: IMElement | IMTextNode) {
+function diffElements(newElement: VElement | VText, oldElement: VElement | VText) {
   const currentPatches: Patch[] = [];
 
   if (checkHasNullElement([newElement, oldElement])) {
@@ -90,8 +86,8 @@ function diffElements(newElement: IMElement | IMTextNode, oldElement: IMElement 
       });
     }
   } else if (checkIsBothElement([newElement, oldElement])) {
-    newElement = newElement as IMElement;
-    oldElement = oldElement as IMElement;
+    newElement = newElement as VElement;
+    oldElement = oldElement as VElement;
 
     const props = diffProps(newElement.props, oldElement.props);
     if (!checkIsEmptyObject(props)) {
@@ -138,7 +134,7 @@ function checkIsEmptyObject(ob: Object): boolean {
   return Object.keys(ob).length === 0;
 }
 
-function checkHasNullElement(obs: (IMElement | IMTextNode)[]): boolean {
+function checkHasNullElement(obs: (VElement | VText)[]): boolean {
   for (const o of obs) {
     if (o === null || o === undefined) {
       return true;
@@ -148,9 +144,9 @@ function checkHasNullElement(obs: (IMElement | IMTextNode)[]): boolean {
   return false;
 }
 
-function checkHasTextElement(obs: (IMElement | IMTextNode)[]): boolean {
+function checkHasTextElement(obs: (VElement | VText)[]): boolean {
   for (const o of obs) {
-    if (o instanceof IMTextNode || o.hasOwnProperty("text")) {
+    if (o instanceof VText || o.hasOwnProperty("text")) {
       return true;
     }
   }
@@ -158,11 +154,11 @@ function checkHasTextElement(obs: (IMElement | IMTextNode)[]): boolean {
   return false;
 }
 
-function checkIsBothElement(obs: (IMElement | IMTextNode)[]): boolean {
+function checkIsBothElement(obs: (VElement | VText)[]): boolean {
   let lastType = null;
 
   for (const o of obs) {
-    if (o instanceof IMElement) {
+    if (o instanceof VElement) {
       if (lastType === null) {
         lastType = o.tagName;
       } else if (o.tagName !== lastType) {

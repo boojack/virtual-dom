@@ -1,35 +1,25 @@
+import { VText } from "./VText";
+
 /**
- * IMElement
+ * VElement
  */
 interface Dict {
   [key: string]: any;
 }
 
-export class IMTextNode {
-  public text: string;
-
-  constructor(text: string) {
-    this.text = text;
-  }
-
-  public render() {
-    return document.createTextNode(this.text);
-  }
-}
-
-export class IMElement {
+export class VElement {
   public tagName: string;
   public props: Dict;
-  public children: (IMElement | IMTextNode)[];
+  public children: (VElement | VText)[];
 
-  constructor(tagName: string, props: Dict, children: (IMElement | IMTextNode | string)[]) {
+  constructor(tagName: string, props: Dict, children: (VElement | VText | string)[]) {
     this.tagName = tagName;
     this.props = props;
     this.children = [];
 
     for (const c of children) {
       if (typeof c === "string") {
-        this.children.push(new IMTextNode(c));
+        this.children.push(new VText(c));
       } else {
         this.children.push(c);
       }

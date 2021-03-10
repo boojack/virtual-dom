@@ -1,12 +1,13 @@
-import { IMElement, IMTextNode } from "../src/vdom/VElement";
+import { VElement } from "../src/vdom/VElement";
+import { VText } from "../src/vdom/VText";
 import { diff } from "../src/vdom/diff";
 import { patch } from "../src/vdom/patch";
 
 // NOTE: Test case
 
-const helloText = new IMTextNode("hello world");
-const p = new IMElement("p", { class: "p" }, [helloText]);
-let div = new IMElement("div", { class: "text", id: "hhh" }, [p]);
+const helloText = new VText("hello world");
+const p = new VElement("p", { class: "p" }, [helloText]);
+let div = new VElement("div", { class: "text", id: "hhh" }, [p]);
 
 const root = div.render();
 document.body.appendChild(root);
@@ -18,9 +19,9 @@ const c = setInterval(() => {
     return;
   }
   i++;
-  const div2 = new IMElement("div", { class: "div-container" }, []);
+  const div2 = new VElement("div", { class: "div-container" }, []);
   for (let j = 0; j < i; j++) {
-    const timeText = new IMElement("p", {}, [i + ": " + Date.now()]);
+    const timeText = new VElement("p", {}, [i + ": " + Date.now()]);
     div2.children.push(timeText);
   }
 

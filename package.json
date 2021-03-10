@@ -1,6 +1,8 @@
 {
-  "name": "imreact",
+  "name": "vision",
   "version": "0.0.0",
+  "description": "",
+  "author": "justfakemoz",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",

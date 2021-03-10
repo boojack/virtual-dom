@@ -8,11 +8,9 @@ import { Patch } from "./patch";
  * @returns patches Map<number, Patch[]>: the differs between two vDOM
  */
 export function diff(newElement: IMElement | IMTextNode, oldElement: IMElement | IMTextNode) {
-  const walker: Walker = { index: 0 };
   const patches = new Map<number, Patch[]>();
 
-  dfsWalkDiffs(newElement, oldElement, walker, patches);
-
+  dfsWalkDiffs(newElement, oldElement, { index: 0 }, patches);
   return patches;
 }
 
@@ -29,8 +27,34 @@ function dfsWalkDiffs(
   walker: Walker,
   patches: Map<number, Patch[]>
 ) {
-  const currentPatches: Patch[] = [];
   const currentIndex = walker.index;
+  let currentPatches: Patch[] = diffElements(newElement, oldElement);
+
+  if (currentPatches.length !== 0) {
+    if (patches.has(currentIndex)) {
+      currentPatches = (patches.get(currentIndex) as Patch[]).concat(currentPatches);
+    }
+    patches.set(currentIndex, currentPatches);
+  }
+
+  if (checkIsBothElement([newElement, oldElement])) {
+    newElement = newElement as IMElement;
+    oldElement = oldElement as IMElement;
+
+    const maxlen = Math.max(oldElement.children.length, newElement.children.length);
+    const minlen = Math.min(oldElement.children.length, newElement.children.length);
+    for (let i = 0; i < minlen; ++i) {
+      walker.index++;
+      dfsWalkDiffs(newElement.children[i], oldElement.children[i], walker, patches);
+    }
+    for (let i = minlen; i < maxlen; ++i) {
+      dfsWalkDiffs(newElement.children[i], oldElement.children[i], { index: currentIndex }, patches);
+    }
+  }
+}
+
+function diffElements(newElement: IMElement | IMTextNode, oldElement: IMElement | IMTextNode) {
+  const currentPatches: Patch[] = [];
 
   if (checkHasNullElement([newElement, oldElement])) {
     if (!oldElement) {
@@ -70,16 +94,6 @@ function dfsWalkDiffs(
         props: props,
       });
     }
-
-    const maxlen = Math.max(oldElement.children.length, newElement.children.length);
-    const minlen = Math.min(oldElement.children.length, newElement.children.length);
-    for (let i = minlen; i < maxlen; ++i) {
-      dfsWalkDiffs(newElement.children[i], oldElement.children[i], walker, patches);
-    }
-    for (let i = 0; i < minlen; ++i) {
-      walker.index++;
-      dfsWalkDiffs(newElement.children[i], oldElement.children[i], walker, patches);
-    }
   } else {
     currentPatches.push({
       type: "REPLACE",
@@ -87,12 +101,7 @@ function dfsWalkDiffs(
     });
   }
 
-  if (currentPatches.length !== 0) {
-    if (patches.has(currentIndex)) {
-      currentPatches.push(...(patches.get(currentIndex) as Patch[]));
-    }
-    patches.set(currentIndex, currentPatches);
-  }
+  return currentPatches;
 }
 
 /**

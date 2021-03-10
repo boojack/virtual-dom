@@ -2,20 +2,24 @@ import { IMElement, IMTextNode } from "./lib/imreact/IMElement";
 import { diff } from "./lib/imreact/diff";
 import { patch } from "./lib/imreact/patch";
 
-const p = new IMElement("p", { class: "p" }, [new IMTextNode("hello world")]);
-const div = new IMElement("div", { class: "text", id: "hhh" }, [p, p, p]);
+const helloText = new IMTextNode("hello world");
+const p = new IMElement("p", { class: "p" }, [helloText]);
+let div = new IMElement("div", { class: "text", id: "hhh" }, [p]);
 
-const timeText = new IMTextNode("hey yo");
-const p2 = new IMElement("p", { class: "p" }, [timeText]);
+const p2 = new IMElement("p", { class: "p123" }, [helloText]);
 const div2 = new IMElement("div", { class: "div-container" }, [p2]);
 
 const root = div.render();
 document.body.appendChild(root);
 
-setInterval(() => {
-  timeText.text = "" + Date.now();
+const c = setInterval(() => {
+  const timeText = new IMElement("p", {}, ["" + Date.now()]);
+  div2.children.push(timeText);
+
   const patches = diff(div2, div);
+  console.log(patches);
   patch(root, patches);
-}, 1000);
+  div = JSON.parse(JSON.stringify(div2));
+}, 2000);
 
 export {};

@@ -1,4 +1,4 @@
-import { IMElement, IMTextNode } from "./IMElement";
+import { IMElement, IMTextNode } from "./VElement";
 import { Patch } from "./patch";
 
 /**
@@ -53,6 +53,12 @@ function dfsWalkDiffs(
   }
 }
 
+/**
+ * differ elements
+ * @param newElement
+ * @param oldElement
+ * @returns
+ */
 function diffElements(newElement: IMElement | IMTextNode, oldElement: IMElement | IMTextNode) {
   const currentPatches: Patch[] = [];
 

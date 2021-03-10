@@ -1,6 +1,6 @@
-import { IMElement, IMTextNode } from "../lib/imreact/IMElement";
-import { diff } from "../lib/imreact/diff";
-import { patch } from "../lib/imreact/patch";
+import { IMElement, IMTextNode } from "../src/vdom/VElement";
+import { diff } from "../src/vdom/diff";
+import { patch } from "../src/vdom/patch";
 
 // NOTE: Test case
 

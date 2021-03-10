@@ -1,4 +1,4 @@
-import { IMElement, IMTextNode } from "./IMElement";
+import { IMElement, IMTextNode } from "./VElement";
 
 type PatchType = "CREATE" | "REPLACE" | "PROPS" | "TEXT";
 

@@ -11,6 +11,10 @@ export class IMTextNode {
   constructor(text: string) {
     this.text = text;
   }
+
+  public render() {
+    return document.createTextNode(this.text);
+  }
 }
 
 export class IMElement {
@@ -18,10 +22,18 @@ export class IMElement {
   public props: Dict;
   public children: (IMElement | IMTextNode)[];
 
-  constructor(tagName: string, props: Dict, children: (IMElement | IMTextNode)[]) {
+  constructor(tagName: string, props: Dict, children: (IMElement | IMTextNode | string)[]) {
     this.tagName = tagName;
     this.props = props;
-    this.children = children;
+    this.children = [];
+
+    for (const c of children) {
+      if (typeof c === "string") {
+        this.children.push(new IMTextNode(c));
+      } else {
+        this.children.push(c);
+      }
+    }
   }
 
   public render() {
@@ -35,8 +47,7 @@ export class IMElement {
     const children = this.children;
 
     for (const child of children) {
-      const childEl = child instanceof IMElement ? child.render() : document.createTextNode(child.text);
-      el.appendChild(childEl);
+      el.appendChild(child.render());
     }
 
     return el;

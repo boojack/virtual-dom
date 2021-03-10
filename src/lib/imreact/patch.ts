@@ -1,10 +1,6 @@
 import { IMElement, IMTextNode } from "./IMElement";
 
-type PatchType = 0 | 1 | 2;
-
-const REPLACE = 0;
-const PROPS = 1;
-const TEXT = 2;
+type PatchType = "CREATE" | "REPLACE" | "PROPS" | "TEXT";
 
 export interface Patch {
   type: PatchType;
@@ -14,50 +10,44 @@ export interface Patch {
   props?: Dict;
 }
 
-export function patch(element: Element, patches: Dict) {
+export function patch(element: Element, patches: Map<number, Patch[]>) {
   const walker: Walker = { index: 0 };
 
-  dfsWalk(element, walker, patches);
+  dfsWalkPatches(element, walker, patches);
 }
 
-function dfsWalk(element: Element, walker: Walker, patches: Dict) {
-  if (patches[walker.index]) {
-    applyPatch(element, patches[walker.index]);
-
-    // NOTE: the element had been deleted and not need to walk children
-    if (patches[walker.index].type === REPLACE) {
-      return;
+function dfsWalkPatches(element: Element, walker: Walker, patches: Map<number, Patch[]>) {
+  if (patches.has(walker.index)) {
+    for (const patch of patches.get(walker.index) as []) {
+      applyPatch(element, patch);
     }
   }
 
-  const length = element.children.length;
-  if (length === 0 && element.textContent !== "") {
-    walker.index++;
-    if (patches[walker.index]) {
-      applyPatch(element, patches[walker.index]);
-    }
-  }
-
-  const children = [];
-  for (let i = 0; i < element.children.length; i++) {
-    children.push(element.children[i]);
-  }
+  const children = Array.from(element.childNodes) as Element[];
 
   for (let i = 0; i < children.length; i++) {
     walker.index++;
-    dfsWalk(children[i], walker, patches);
+    dfsWalkPatches(children[i], walker, patches);
   }
 }
 
 function applyPatch(element: Element, patch: Patch) {
   switch (patch.type) {
-    case REPLACE: {
-      if (!patch.element) {
-        element.remove();
+    case "CREATE": {
+      if (patch.element !== undefined) {
+        element.appendChild(patch.element.render());
       }
       break;
     }
-    case PROPS: {
+    case "REPLACE": {
+      if (!patch || !patch.element) {
+        element.remove();
+      } else {
+        element.parentNode?.replaceChild(patch.element.render(), element);
+      }
+      break;
+    }
+    case "PROPS": {
       for (const key in patch.props) {
         if (patch.props[key]) {
           element.setAttribute(key, patch.props[key]);
@@ -67,7 +57,7 @@ function applyPatch(element: Element, patch: Patch) {
       }
       break;
     }
-    case TEXT: {
+    case "TEXT": {
       element.textContent = patch.text || "";
       break;
     }

@@ -1,62 +1,84 @@
 import { IMElement, IMTextNode } from "./IMElement";
 import { Patch } from "./patch";
 
-const REPLACE = 0;
-const PROPS = 1;
-const TEXT = 2;
-
 export function diff(newElement: IMElement | IMTextNode, oldElement: IMElement | IMTextNode) {
   const walker: Walker = { index: 0 };
-  const patches: Dict = {};
+  const patches = new Map<number, Patch[]>();
 
-  dfsWalk(newElement, oldElement, walker, patches);
+  dfsWalkDiffs(newElement, oldElement, walker, patches);
 
   return patches;
 }
 
-function dfsWalk(newElement: IMElement | IMTextNode, oldElement: IMElement | IMTextNode, walker: Walker, patches: Dict) {
+function dfsWalkDiffs(
+  newElement: IMElement | IMTextNode,
+  oldElement: IMElement | IMTextNode,
+  walker: Walker,
+  patches: Map<number, Patch[]>
+) {
+  const currentPatches: Patch[] = [];
   const currentIndex = walker.index;
-  let currentPatch: Patch | null = null;
 
-  if (!newElement || !oldElement) {
-    currentPatch = {
-      type: REPLACE,
-      element: newElement,
-    };
-  } else if (newElement instanceof IMTextNode || oldElement instanceof IMTextNode) {
-    if (newElement instanceof IMTextNode) {
-      currentPatch = {
-        type: TEXT,
-        text: newElement.text,
-      };
-    } else {
-      currentPatch = {
-        type: REPLACE,
+  if (checkHasNullElement([newElement, oldElement])) {
+    if (!oldElement) {
+      currentPatches.push({
+        type: "CREATE",
         element: newElement,
-      };
+      });
+    } else {
+      currentPatches.push({
+        type: "REPLACE",
+        element: newElement,
+      });
     }
-  } else if (newElement.tagName === oldElement.tagName) {
+  } else if (checkHasTextElement([newElement, oldElement])) {
+    const newText = (newElement as any).text || "";
+    const oldText = (oldElement as any).text || "";
+
+    if (newText != "" && newText !== oldText) {
+      currentPatches.push({
+        type: "TEXT",
+        text: newText,
+      });
+    } else {
+      currentPatches.push({
+        type: "REPLACE",
+        element: newElement,
+      });
+    }
+  } else if (checkIsBothElement([newElement, oldElement])) {
+    newElement = newElement as IMElement;
+    oldElement = oldElement as IMElement;
+
     const props = diffProps(newElement.props, oldElement.props);
     if (!isEmptyObject(props)) {
-      currentPatch = {
-        type: PROPS,
+      currentPatches.push({
+        type: "PROPS",
         props: props,
-      };
+      });
     }
 
-    for (let i = 0; i < oldElement.children.length; ++i) {
+    const maxlen = Math.max(oldElement.children.length, newElement.children.length);
+    const minlen = Math.min(oldElement.children.length, newElement.children.length);
+    for (let i = minlen; i < maxlen; ++i) {
+      dfsWalkDiffs(newElement.children[i], oldElement.children[i], walker, patches);
+    }
+    for (let i = 0; i < minlen; ++i) {
       walker.index++;
-      dfsWalk(newElement.children[i], oldElement.children[i], walker, patches);
+      dfsWalkDiffs(newElement.children[i], oldElement.children[i], walker, patches);
     }
   } else {
-    currentPatch = {
-      type: REPLACE,
+    currentPatches.push({
+      type: "REPLACE",
       element: newElement,
-    };
+    });
   }
 
-  if (currentPatch) {
-    patches[currentIndex] = currentPatch;
+  if (currentPatches.length !== 0) {
+    if (patches.has(currentIndex)) {
+      currentPatches.push(...(patches.get(currentIndex) as Patch[]));
+    }
+    patches.set(currentIndex, currentPatches);
   }
 }
 
@@ -82,4 +104,42 @@ function diffProps(newProps: Dict, oldProps: Dict) {
 
 function isEmptyObject(ob: Object): boolean {
   return Object.keys(ob).length === 0;
+}
+
+function checkHasNullElement(obs: (IMElement | IMTextNode)[]) {
+  for (const o of obs) {
+    if (o === null || o === undefined) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+function checkHasTextElement(obs: (IMElement | IMTextNode)[]) {
+  for (const o of obs) {
+    if (o instanceof IMTextNode || o.hasOwnProperty("text")) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+function checkIsBothElement(obs: (IMElement | IMTextNode)[]) {
+  let lastType = null;
+
+  for (const o of obs) {
+    if (o instanceof IMElement) {
+      if (lastType === null) {
+        lastType = o.tagName;
+      } else if (o.tagName !== lastType) {
+        return false;
+      }
+    } else {
+      return false;
+    }
+  }
+
+  return true;
 }

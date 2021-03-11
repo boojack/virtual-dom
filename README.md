@@ -10,11 +10,12 @@ The source code folder just like this:
 
 ```java
 /src
-  /lib/imreact
+  /vdom           // virtual dom about
+    VElement.ts   // define the vDOM element, such as Element/TextNode
+    VText.ts      // define the vDOM element, such as Element/TextNode
     diff.ts       // figure out the differences between two vDOM
     patch.ts      // apply the differs to the real DOM
-    IMElement.ts  // define the vDOM element, such as Element/TextNode
-    types.d.ts    // common types
+    render.ts     // mock ReactDOM.render()
 ```
 
 Above all, `diff.ts` and `patch.ts` have the most important concepts about virtual dom. So, just check them out clearly.

@@ -1,6 +1,4 @@
-import { VElement } from "./VElement";
-import { VText } from "./VText";
-import { VNode } from "./mod";
+import { VNode, VElement, VText } from "./mod";
 import { Patch } from "./patch";
 
 /**

@@ -9,6 +9,6 @@ interface Walker {
   index: number;
 }
 
-interface VNodeProps {
-  [key: string]: BasicType | VNodeProps | VNodeProps[];
+interface VElementProps {
+  [key: string]: BasicType | VElementProps | VElementProps[];
 }

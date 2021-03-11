@@ -1,15 +1,14 @@
-import { VNode } from "./mod";
-import { VText } from "./VText";
+import { VNode, VText } from "./mod";
 
 /**
  * VElement
  */
 export class VElement {
   public tagName: string;
-  public props: VNodeProps;
+  public props: VElementProps;
   public children: VNode[];
 
-  constructor(tagName: string, props: VNodeProps, children: (VNode | string)[]) {
+  constructor(tagName: string, props: VElementProps, children: (VNode | string)[]) {
     this.tagName = tagName;
     this.props = props;
     this.children = [];

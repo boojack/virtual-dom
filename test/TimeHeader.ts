@@ -1,15 +1,14 @@
 import { utils } from "../src/utils";
 import { diff } from "../src/vdom/diff";
+import { VElement } from "../src/vdom/mod";
 import { patch } from "../src/vdom/patch";
-import { VElement } from "../src/vdom/VElement";
-import { VText } from "../src/vdom/VText";
 
 export class TimeHeader extends VElement {
   public tagName: string = "div";
-  public props: VNodeProps;
+  public props: VElementProps;
   public element?: HTMLElement;
 
-  constructor(props: VNodeProps, text?: string) {
+  constructor(props: VElementProps, text?: string) {
     super("h1", props, []);
 
     this.props = props;

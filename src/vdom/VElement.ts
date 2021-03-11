@@ -24,9 +24,7 @@ export class VElement extends VNode {
     }
   }
 
-  public beforeMount(): void {
-    console.log("here", this);
-  }
+  public beforeMount(): void {}
 
   public render() {
     const el = document.createElement(this.tagName);

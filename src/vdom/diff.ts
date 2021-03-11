@@ -79,6 +79,8 @@ function diffElements(newElement: VElement | VText, oldElement: VElement | VText
         type: "TEXT",
         text: newText,
       });
+    } else if (newText === oldText) {
+      // do nth
     } else {
       currentPatches.push({
         type: "REPLACE",

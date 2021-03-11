@@ -9,5 +9,7 @@ export abstract class VNode {
 
   public beforeMount(): void {}
 
-  public abstract render(): void;
+  public setState() {}
+
+  public abstract render(): any;
 }

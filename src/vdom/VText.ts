@@ -8,7 +8,7 @@ export class VText extends VNode {
     this.text = text;
   }
 
-  public render() {
+  public render(): Text {
     return document.createTextNode(this.text);
   }
 }

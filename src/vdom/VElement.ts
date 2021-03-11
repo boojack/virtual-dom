@@ -1,16 +1,15 @@
-import { VNode } from "./VNode";
+import { VNode } from "./mod";
 import { VText } from "./VText";
 
 /**
  * VElement
  */
-export class VElement extends VNode {
+export class VElement {
   public tagName: string;
   public props: VNodeProps;
-  public children: (VElement | VText)[];
+  public children: VNode[];
 
-  constructor(tagName: string, props: VNodeProps, children: (VElement | VText | string)[]) {
-    super();
+  constructor(tagName: string, props: VNodeProps, children: (VNode | string)[]) {
     this.tagName = tagName;
     this.props = props;
     this.children = [];
@@ -26,8 +25,9 @@ export class VElement extends VNode {
 
   public beforeMount(): void {}
 
-  public render() {
+  public render(): HTMLElement {
     const el = document.createElement(this.tagName);
+
     const props = this.props;
 
     for (const key in props) {

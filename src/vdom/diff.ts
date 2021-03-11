@@ -1,5 +1,6 @@
 import { VElement } from "./VElement";
 import { VText } from "./VText";
+import { VNode } from "./mod";
 import { Patch } from "./patch";
 
 /**
@@ -8,7 +9,7 @@ import { Patch } from "./patch";
  * @param oldElement the vDOM which will be replaced
  * @returns patches Map<number, Patch[]>: the differs between two vDOM
  */
-export function diff(newElement: VElement | VText, oldElement: VElement | VText) {
+export function diff(newElement: VNode, oldElement: VNode) {
   const patches = new Map<number, Patch[]>();
 
   dfsWalkDiffs(newElement, oldElement, { index: 0 }, patches);
@@ -22,7 +23,7 @@ export function diff(newElement: VElement | VText, oldElement: VElement | VText)
  * @param walker use for giving the current vDOM a union tag
  * @param patches
  */
-function dfsWalkDiffs(newElement: VElement | VText, oldElement: VElement | VText, walker: Walker, patches: Map<number, Patch[]>) {
+function dfsWalkDiffs(newElement: VNode, oldElement: VNode, walker: Walker, patches: Map<number, Patch[]>) {
   const currentIndex = walker.index;
   let currentPatches: Patch[] = diffElements(newElement, oldElement);
 
@@ -55,7 +56,7 @@ function dfsWalkDiffs(newElement: VElement | VText, oldElement: VElement | VText
  * @param oldElement
  * @returns
  */
-function diffElements(newElement: VElement | VText, oldElement: VElement | VText) {
+function diffElements(newElement: VNode, oldElement: VNode) {
   const currentPatches: Patch[] = [];
 
   if (checkHasNullElement([newElement, oldElement])) {
@@ -136,7 +137,7 @@ function checkIsEmptyObject(ob: Object): boolean {
   return Object.keys(ob).length === 0;
 }
 
-function checkHasNullElement(obs: (VElement | VText)[]): boolean {
+function checkHasNullElement(obs: VNode[]): boolean {
   for (const o of obs) {
     if (o === null || o === undefined) {
       return true;
@@ -146,7 +147,7 @@ function checkHasNullElement(obs: (VElement | VText)[]): boolean {
   return false;
 }
 
-function checkHasTextElement(obs: (VElement | VText)[]): boolean {
+function checkHasTextElement(obs: VNode[]): boolean {
   for (const o of obs) {
     if (o instanceof VText || o.hasOwnProperty("text")) {
       return true;
@@ -156,7 +157,7 @@ function checkHasTextElement(obs: (VElement | VText)[]): boolean {
   return false;
 }
 
-function checkIsBothElement(obs: (VElement | VText)[]): boolean {
+function checkIsBothElement(obs: VNode[]): boolean {
   let lastType = null;
 
   for (const o of obs) {

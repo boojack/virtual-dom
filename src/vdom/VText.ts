@@ -1,10 +1,12 @@
-import { VNode } from "./VNode";
-
-export class VText extends VNode {
+/**
+ * VText
+ * use for a TextNode container
+ * the basic vdom
+ */
+export class VText {
   public text: string;
 
   constructor(text: string) {
-    super();
     this.text = text;
   }
 

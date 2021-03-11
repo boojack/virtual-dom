@@ -1,6 +1,6 @@
 import { diff } from "./diff";
+import { VNode } from "./mod";
 import { patch } from "./patch";
-import { VNode } from "./VNode";
 
 let vdomTemp: VNode | null = null;
 
@@ -10,7 +10,7 @@ export function render(vdom: VNode, root: HTMLElement | null): VNode {
   }
 
   if (vdomTemp !== null) {
-    const patches = diff(vdom as any, vdomTemp as any);
+    const patches = diff(vdom, vdomTemp);
     console.log(vdom, vdomTemp, patches);
     patch(root, patches);
   } else {

@@ -1,12 +1,11 @@
-import { VElement } from "./VElement";
-import { VText } from "./VText";
+import { VNode } from "./mod";
 
 type PatchType = "CREATE" | "REPLACE" | "PROPS" | "TEXT";
 
 export interface Patch {
   type: PatchType;
 
-  element?: VElement | VText;
+  element?: VNode;
   text?: string;
   props?: Dict<any>;
 }
@@ -17,7 +16,8 @@ export interface Patch {
  * @param patches differs
  */
 export function patch(element: Element, patches: Map<number, Patch[]>) {
-  const walker: Walker = { index: 0 };
+  // NOTE: 由于render 里 element 为root，此处暂时从 -1 开始
+  const walker: Walker = { index: -1 };
 
   dfsWalkPatches(element, walker, patches);
 }
@@ -26,6 +26,7 @@ export function patch(element: Element, patches: Map<number, Patch[]>) {
  * DFS traverse
  */
 function dfsWalkPatches(element: Element, walker: Walker, patches: Map<number, Patch[]>) {
+  console.log(walker.index, element);
   if (patches.has(walker.index)) {
     for (const patch of patches.get(walker.index) as []) {
       applyPatch(element, patch);

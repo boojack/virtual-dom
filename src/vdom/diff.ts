@@ -5,27 +5,27 @@ import { Patch } from "./patch";
 
 /**
  * figure out the differs between two vDOM
- * @param newElement the boss vDOM
- * @param oldElement the vDOM which will be replaced
+ * @param vdom the boss vDOM
+ * @param oldVdom the vDOM which will be replaced
  * @returns patches Map<number, Patch[]>: the differs between two vDOM
  */
-export function diff(newElement: VNode, oldElement: VNode) {
+export function diff(vdom: VNode, oldVdom: VNode) {
   const patches = new Map<number, Patch[]>();
 
-  dfsWalkDiffs(newElement, oldElement, { index: 0 }, patches);
+  dfsWalkDiffs(vdom, oldVdom, { index: 0 }, patches);
   return patches;
 }
 
 /**
  * DFS traverse the whole vDOM
- * @param newElement
- * @param oldElement
+ * @param vdom
+ * @param obsVdom
  * @param walker use for giving the current vDOM a union tag
  * @param patches
  */
-function dfsWalkDiffs(newElement: VNode, oldElement: VNode, walker: Walker, patches: Map<number, Patch[]>) {
+function dfsWalkDiffs(vdom: VNode, obsVdom: VNode, walker: Walker, patches: Map<number, Patch[]>) {
   const currentIndex = walker.index;
-  let currentPatches: Patch[] = diffElements(newElement, oldElement);
+  let currentPatches: Patch[] = diffElements(vdom, obsVdom);
 
   if (currentPatches.length !== 0) {
     if (patches.has(currentIndex)) {
@@ -34,65 +34,64 @@ function dfsWalkDiffs(newElement: VNode, oldElement: VNode, walker: Walker, patc
     patches.set(currentIndex, currentPatches);
   }
 
-  if (checkIsBothElement([newElement, oldElement])) {
-    newElement = newElement as VElement;
-    oldElement = oldElement as VElement;
+  if (checkIsSameTagElement([vdom, obsVdom])) {
+    vdom = vdom as VElement;
+    obsVdom = obsVdom as VElement;
 
-    const maxlen = Math.max(oldElement.children.length, newElement.children.length);
-    const minlen = Math.min(oldElement.children.length, newElement.children.length);
+    const maxlen = Math.max(obsVdom.children.length, vdom.children.length);
+    const minlen = Math.min(obsVdom.children.length, vdom.children.length);
     for (let i = 0; i < minlen; ++i) {
       walker.index++;
-      dfsWalkDiffs(newElement.children[i], oldElement.children[i], walker, patches);
+      dfsWalkDiffs(vdom.children[i], obsVdom.children[i], walker, patches);
     }
     for (let i = minlen; i < maxlen; ++i) {
-      dfsWalkDiffs(newElement.children[i], oldElement.children[i], { index: currentIndex }, patches);
+      dfsWalkDiffs(vdom.children[i], obsVdom.children[i], { index: currentIndex }, patches);
     }
   }
 }
 
 /**
  * differ elements
- * @param newElement
- * @param oldElement
+ * @param element
+ * @param obsElement
  * @returns
  */
-function diffElements(newElement: VNode, oldElement: VNode) {
+function diffElements(element: VNode, obsElement: VNode) {
   const currentPatches: Patch[] = [];
 
-  if (checkHasNullElement([newElement, oldElement])) {
-    if (!oldElement) {
+  if (checkHasNullElement([element, obsElement])) {
+    if (!obsElement) {
       currentPatches.push({
         type: "CREATE",
-        element: newElement,
+        vNode: element,
       });
     } else {
+      // TODO: 是否应该换成 DELETE
       currentPatches.push({
         type: "REPLACE",
-        element: newElement,
+        vNode: element,
       });
     }
-  } else if (checkHasTextElement([newElement, oldElement])) {
-    const newText = (newElement as any).text || "";
-    const oldText = (oldElement as any).text || "";
+  } else if (checkHasTextElement([element, obsElement])) {
+    const text = (element as any).text || "";
+    const obsText = (obsElement as any).text || "";
 
-    if (newText != "" && newText !== oldText) {
+    if (text != "" && text !== obsText) {
       currentPatches.push({
         type: "TEXT",
-        text: newText,
+        text: text,
       });
-    } else if (newText === oldText) {
-      // do nth
-    } else {
+    } else if (text !== obsText) {
       currentPatches.push({
         type: "REPLACE",
-        element: newElement,
+        vNode: element,
       });
     }
-  } else if (checkIsBothElement([newElement, oldElement])) {
-    newElement = newElement as VElement;
-    oldElement = oldElement as VElement;
+  } else if (checkIsSameTagElement([element, obsElement])) {
+    element = element as VElement;
+    obsElement = obsElement as VElement;
 
-    const props = diffProps(newElement.props, oldElement.props);
+    const props = diffElementProps(element.props, obsElement.props);
     if (!checkIsEmptyObject(props)) {
       currentPatches.push({
         type: "PROPS",
@@ -102,7 +101,7 @@ function diffElements(newElement: VNode, oldElement: VNode) {
   } else {
     currentPatches.push({
       type: "REPLACE",
-      element: newElement,
+      vNode: element,
     });
   }
 
@@ -112,7 +111,7 @@ function diffElements(newElement: VNode, oldElement: VNode) {
 /**
  * diff the vDOM props
  */
-function diffProps(newProps: Dict<any>, oldProps: Dict<any>) {
+function diffElementProps(newProps: Dict<any>, oldProps: Dict<any>) {
   const diffes: Dict<any> = {};
 
   for (const key in oldProps) {
@@ -149,7 +148,7 @@ function checkHasNullElement(obs: VNode[]): boolean {
 
 function checkHasTextElement(obs: VNode[]): boolean {
   for (const o of obs) {
-    if (o instanceof VText || o.hasOwnProperty("text")) {
+    if (o instanceof VText) {
       return true;
     }
   }
@@ -157,7 +156,7 @@ function checkHasTextElement(obs: VNode[]): boolean {
   return false;
 }
 
-function checkIsBothElement(obs: VNode[]): boolean {
+function checkIsSameTagElement(obs: VNode[]): boolean {
   let lastType = null;
 
   for (const o of obs) {

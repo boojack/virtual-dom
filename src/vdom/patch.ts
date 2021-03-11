@@ -5,7 +5,7 @@ type PatchType = "CREATE" | "REPLACE" | "PROPS" | "TEXT";
 export interface Patch {
   type: PatchType;
 
-  element?: VNode;
+  vNode?: VNode;
   text?: string;
   props?: Dict<any>;
 }
@@ -26,9 +26,8 @@ export function patch(element: Element, patches: Map<number, Patch[]>) {
  * DFS traverse
  */
 function dfsWalkPatches(element: Element, walker: Walker, patches: Map<number, Patch[]>) {
-  console.log(walker.index, element);
   if (patches.has(walker.index)) {
-    for (const patch of patches.get(walker.index) as []) {
+    for (const patch of patches.get(walker.index) as Patch[]) {
       applyPatch(element, patch);
     }
   }
@@ -47,16 +46,16 @@ function dfsWalkPatches(element: Element, walker: Walker, patches: Map<number, P
 function applyPatch(element: Element, patch: Patch) {
   switch (patch.type) {
     case "CREATE": {
-      if (patch.element !== undefined) {
-        element.appendChild(patch.element.render());
+      if (patch.vNode) {
+        element.appendChild(patch.vNode.render());
       }
       break;
     }
     case "REPLACE": {
-      if (!patch || !patch.element) {
+      if (!patch.vNode) {
         element.remove();
       } else {
-        element.parentNode?.replaceChild(patch.element.render(), element);
+        element.parentNode?.replaceChild(patch.vNode.render(), element);
       }
       break;
     }

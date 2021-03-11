@@ -1,13 +1,14 @@
-import { IMElement, IMTextNode } from "./VElement";
+import { VElement } from "./VElement";
+import { VText } from "./VText";
 
 type PatchType = "CREATE" | "REPLACE" | "PROPS" | "TEXT";
 
 export interface Patch {
   type: PatchType;
 
-  element?: IMElement | IMTextNode;
+  element?: VElement | VText;
   text?: string;
-  props?: Dict;
+  props?: Dict<any>;
 }
 
 /**

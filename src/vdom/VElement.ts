@@ -1,18 +1,16 @@
+import { VNode } from "./VNode";
 import { VText } from "./VText";
 
 /**
  * VElement
  */
-interface Dict {
-  [key: string]: any;
-}
-
-export class VElement {
+export class VElement extends VNode {
   public tagName: string;
-  public props: Dict;
+  public props: VNodeProps;
   public children: (VElement | VText)[];
 
-  constructor(tagName: string, props: Dict, children: (VElement | VText | string)[]) {
+  constructor(tagName: string, props: VNodeProps, children: (VElement | VText | string)[]) {
+    super();
     this.tagName = tagName;
     this.props = props;
     this.children = [];
@@ -26,12 +24,18 @@ export class VElement {
     }
   }
 
+  public beforeMount(): void {
+    console.log("here", this);
+  }
+
   public render() {
     const el = document.createElement(this.tagName);
     const props = this.props;
 
     for (const key in props) {
-      el.setAttribute(key, props[key]);
+      if (typeof props[key] === "string") {
+        el.setAttribute(key, props[key] as string);
+      }
     }
 
     const children = this.children;

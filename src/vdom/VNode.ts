@@ -1,12 +1,13 @@
-// TODO:
-export class VNode {
-  public text: string;
+export abstract class VNode {
+  private static idCounter = 0;
+  public id: number;
 
-  constructor(text: string) {
-    this.text = text;
+  constructor() {
+    this.id = VNode.idCounter++;
+    this.beforeMount();
   }
 
-  public render() {
-    return document.createTextNode(this.text);
-  }
+  public beforeMount(): void {}
+
+  public abstract render(): void;
 }

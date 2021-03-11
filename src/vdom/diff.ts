@@ -109,8 +109,8 @@ function diffElements(newElement: VElement | VText, oldElement: VElement | VText
 /**
  * diff the vDOM props
  */
-function diffProps(newProps: Dict, oldProps: Dict) {
-  const diffes: Dict = {};
+function diffProps(newProps: Dict<any>, oldProps: Dict<any>) {
+  const diffes: Dict<any> = {};
 
   for (const key in oldProps) {
     const value = oldProps[key];

@@ -11,6 +11,7 @@ export function render(vdom: VNode, root: HTMLElement | null): VNode {
 
   if (vdomTemp !== null) {
     const patches = diff(vdom, vdomTemp);
+    console.log(patches);
     patch(root, patches, true);
   } else {
     root.innerHTML = "";

@@ -9,6 +9,19 @@ interface Walker {
   index: number;
 }
 
-interface VElementProps {
-  [key: string]: BasicType | VElementProps | VElementProps[];
-}
+type VElementEventsKey = keyof HTMLElementEventMap;
+type VElementEventsValue = (ev: Event, el: HTMLElement, args?: any) => any;
+type VElementPropsKey = VElementEventsKey | string;
+type VElementAttrsValue = BasicType | VElementAttrs | VElementAttrs[];
+
+type VElementProps = {
+  [key in VElementEventsKey | string]: VElementAttrsValue | VElementEventsValue;
+};
+
+type VElementAttrs = {
+  [key: string]: VElementAttrsValue;
+};
+
+type VElementEvents = {
+  [key in VElementEventsKey]: VElementEventsValue;
+};

@@ -7,7 +7,7 @@ export interface Patch {
 
   vNode?: VNode;
   text?: string;
-  props?: Dict<any>;
+  props?: VElementProps;
 }
 
 /**
@@ -15,7 +15,7 @@ export interface Patch {
  * @param element the real dom
  * @param patches differs
  */
-export function patch(element: Element, patches: Map<number, Patch[]>, fromRoot: boolean = false) {
+export function patch(element: HTMLElement, patches: Map<number, Patch[]>, fromRoot: boolean = false) {
   const walker: Walker = { index: 0 };
 
   if (fromRoot) {
@@ -29,7 +29,7 @@ export function patch(element: Element, patches: Map<number, Patch[]>, fromRoot:
 /**
  * DFS traverse
  */
-function dfsWalkPatches(element: Element, walker: Walker, patches: Map<number, Patch[]>) {
+function dfsWalkPatches(element: HTMLElement, walker: Walker, patches: Map<number, Patch[]>) {
   if (patches.has(walker.index)) {
     for (const patch of patches.get(walker.index) as Patch[]) {
       applyPatch(element, patch);
@@ -40,14 +40,14 @@ function dfsWalkPatches(element: Element, walker: Walker, patches: Map<number, P
 
   for (let i = 0; i < children.length; i++) {
     walker.index++;
-    dfsWalkPatches(children[i], walker, patches);
+    dfsWalkPatches(children[i] as HTMLElement, walker, patches);
   }
 }
 
 /**
  * apply the patch to an element
  */
-function applyPatch(element: Element, patch: Patch) {
+function applyPatch(element: HTMLElement, patch: Patch) {
   switch (patch.type) {
     case "CREATE": {
       if (patch.vNode) {
@@ -65,10 +65,21 @@ function applyPatch(element: Element, patch: Patch) {
     }
     case "PROPS": {
       for (const key in patch.props) {
-        if (patch.props[key]) {
-          element.setAttribute(key, patch.props[key]);
-        } else {
-          element.removeAttribute(key);
+        if (typeof patch.props[key] === "string") {
+          const value = patch.props[key] as string;
+
+          if (patch.props[key]) {
+            element.setAttribute(key, value);
+          } else {
+            element.removeAttribute(key);
+          }
+        } else if (typeof patch.props[key] === "function") {
+          // TODO: how to polish event handler
+          // const eventType = key as VElementEventsKey;
+          // const eventHandler = patch.props[key] as VElementEventsValue;
+          // element.addEventListener(eventType, (ev: Event) => {
+          //   eventHandler.call(this, ev, element);
+          // });
         }
       }
       break;

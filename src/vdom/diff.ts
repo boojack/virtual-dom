@@ -109,20 +109,30 @@ function diffElements(element: VNode, obsElement: VNode) {
 /**
  * diff the vDOM props
  */
-function diffElementProps(newProps: Dict<any>, oldProps: Dict<any>) {
-  const diffes: Dict<any> = {};
+function diffElementProps(props: VElementProps, obsProps: VElementProps) {
+  const diffes: VElementProps = {};
 
-  for (const key in oldProps) {
-    const value = oldProps[key];
+  for (const key in obsProps) {
+    const value = props[key];
+    const obsValue = obsProps[key];
+    const valueType = typeof value;
+    const obsValueType = typeof obsValue;
 
-    if (newProps[key] !== value) {
-      diffes[key] = newProps[key];
+    if (valueType === obsValueType) {
+      if (valueType === "string" && value !== obsValue) {
+        diffes[key] = value;
+      }
+      if (valueType === "function" && value.toString() !== obsValue.toString()) {
+        diffes[key] = value;
+      }
+    } else {
+      diffes[key] = value;
     }
   }
 
-  for (const key in newProps) {
-    if (!oldProps.hasOwnProperty(key)) {
-      diffes[key] = newProps[key];
+  for (const key in props) {
+    if (!obsProps.hasOwnProperty(key)) {
+      diffes[key] = props[key];
     }
   }
 

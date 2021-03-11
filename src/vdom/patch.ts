@@ -15,9 +15,13 @@ export interface Patch {
  * @param element the real dom
  * @param patches differs
  */
-export function patch(element: Element, patches: Map<number, Patch[]>) {
-  // NOTE: 由于render 里 element 为root，此处暂时从 -1 开始
-  const walker: Walker = { index: -1 };
+export function patch(element: Element, patches: Map<number, Patch[]>, fromRoot: boolean = false) {
+  const walker: Walker = { index: 0 };
+
+  if (fromRoot) {
+    // NOTE: 由于render 里 element 为root，此处暂时从 -1 开始
+    walker.index = -1;
+  }
 
   dfsWalkPatches(element, walker, patches);
 }

@@ -11,8 +11,7 @@ export function render(vdom: VNode, root: HTMLElement | null): VNode {
 
   if (vdomTemp !== null) {
     const patches = diff(vdom, vdomTemp);
-    console.log(vdom, vdomTemp, patches);
-    patch(root, patches);
+    patch(root, patches, true);
   } else {
     root.innerHTML = "";
     root.appendChild(vdom.render());

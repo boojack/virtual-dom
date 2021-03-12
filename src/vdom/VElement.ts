@@ -1,12 +1,15 @@
-import { VNode, VText } from "./mod";
+import { VNode, VText } from "./vdom";
 
 /**
  * VElement
+ * 静态虚节点，无任何状态
  */
 export class VElement {
   public tagName: string;
   public props: VElementProps;
   public children: VNode[];
+
+  private cb?: (el: HTMLElement) => void;
 
   constructor(tagName: string, props: VElementProps, children: (VNode | string)[]) {
     this.tagName = tagName;
@@ -21,8 +24,6 @@ export class VElement {
       }
     }
   }
-
-  public beforeMount(): void {}
 
   public render(): HTMLElement {
     const el = document.createElement(this.tagName);
@@ -49,6 +50,14 @@ export class VElement {
       el.appendChild(child.render());
     }
 
+    if (this.cb) {
+      this.cb(el);
+    }
+
     return el;
+  }
+
+  public listenRender(cb: (el: HTMLElement) => void) {
+    this.cb = cb;
   }
 }

@@ -1,4 +1,4 @@
-import { VNode } from "./mod";
+import { VNode } from "./vdom";
 
 type PatchType = "CREATE" | "REPLACE" | "PROPS" | "TEXT";
 

@@ -20,14 +20,6 @@ export class CounterView extends Component<Props, State, {}> {
     };
   }
 
-  public componentWillMount(): void {
-    // do nth
-  }
-
-  public componentHasShown(): void {
-    // do nth
-  }
-
   public render() {
     return VDom.createElement(
       "div",

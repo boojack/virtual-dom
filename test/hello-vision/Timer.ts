@@ -16,24 +16,14 @@ export class TimerView extends Component<{}, State, {}> {
     this.state = {
       now: new Date().toLocaleTimeString(),
     };
-
-    this.init();
   }
 
-  public init() {
+  public componentWillMount(): void {
     setInterval(() => {
       this.setState({
         now: new Date().toLocaleTimeString(),
       });
     }, 1000);
-  }
-
-  public componentWillMount(): void {
-    // do nth
-  }
-
-  public componentHasShown(): void {
-    // do nth
   }
 
   public render(): VNode {

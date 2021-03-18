@@ -13,6 +13,13 @@ export class VDom {
   private static view: View | VNode;
   private static preVDom: VNode;
 
+  /**
+   * create a static virtual element
+   * @param tagName html tag name
+   * @param props props
+   * @param children
+   * @returns static virtual element
+   */
   public static createElement(tagName: string, props: VElementProps, children: (VNode | View | string)[]): VNode {
     return new VElement(
       tagName,
@@ -56,7 +63,12 @@ export class VDom {
     return el;
   }
 
-  public static render(view: VNode | View, root: HTMLElement | null): VNode {
+  /**
+   * render view to root element
+   * @param view should be class component not vnode
+   * @param root root element
+   */
+  public static render(view: VNode | View, root: HTMLElement | null) {
     if (!root) {
       throw new Error("DOM not found");
     }
@@ -68,10 +80,11 @@ export class VDom {
 
     root.innerHTML = "";
     root.appendChild(VDom.renderVNode(vdom));
-
-    return vdom;
   }
 
+  /**
+   * 一般只有 state class component 才能 rerender
+   */
   public static rerender() {
     if (!VDom.view || !VDom.preVDom || !VDom.rootEl) {
       return;

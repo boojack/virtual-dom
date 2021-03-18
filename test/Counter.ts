@@ -36,13 +36,13 @@ export class CounterView extends Component<Props, State, {}> {
         class: "counter-container",
       },
       [
-        VDom.createElement("p", {}, ["Click me to counter: "]),
+        VDom.createElement("p", {}, ["Click me: "]),
         VDom.createElement(
           "button",
           {
             click: this.handleCounterClick.bind(this),
           },
-          [this.state.counter.toString()]
+          ["Counter: ", this.state.counter.toString()]
         ),
       ]
     );

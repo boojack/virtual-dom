@@ -1,4 +1,4 @@
-import { VDom, VElement } from "../src/vdom/vdom";
+import { VDom } from "../src/vdom/vdom";
 import { CounterView } from "./Counter";
 import { TimerView } from "./Timer";
 import "./index.css";

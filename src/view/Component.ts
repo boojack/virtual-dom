@@ -23,7 +23,7 @@ export abstract class Component<Props, State, E> extends View {
     // TODO
   }
 
-  public abstract componentWillMount(): void;
+  public componentWillMount(): void {}
   // public abstract componentHasShown(): void;
 
   public abstract render(): VNode;

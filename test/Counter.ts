@@ -29,8 +29,7 @@ export class CounterView extends Component<Props, State, {}> {
   }
 
   public render() {
-    return VDom.createElement.call(
-      this,
+    return VDom.createElement(
       "div",
       {
         class: "counter-container",

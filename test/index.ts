@@ -1,14 +1,20 @@
-import { VDom } from "../src/vdom/vdom";
+import { VDom, VNode } from "../src/vdom/vdom";
 import { CounterView } from "./Counter";
 import { TimerView } from "./Timer";
+import { Component } from "../src/view/Component";
 import "./index.css";
 
-const counter = new CounterView({});
-const timer = new TimerView({});
+const Counter = new CounterView({});
+const Timer = new TimerView({});
 
-// NOTE: Test case
-const div = VDom.createElement("div", { class: "div-container" }, [timer.render(), counter.render()]);
+class App extends Component<any, any, any> {
+  public state: any;
+  public componentWillMount(): void {}
+  public render(): VNode {
+    return VDom.createElement("div", { class: "div-container" }, [Timer, Counter]);
+  }
+}
 
-VDom.render(div, document.querySelector("div.root"));
+VDom.render(new App({}), document.querySelector("div.root"));
 
 export {};

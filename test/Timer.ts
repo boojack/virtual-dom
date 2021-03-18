@@ -37,7 +37,7 @@ export class TimerView extends Component<{}, State, {}> {
   }
 
   public render(): VNode {
-    return VDom.createElement.call(this, "div", {}, [
+    return VDom.createElement("div", {}, [
       VDom.createElement("h1", {}, ["Hi, I'm Vision~"]),
       VDom.createElement("h1", {}, [this.state.now]),
     ]);

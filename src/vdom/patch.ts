@@ -1,4 +1,4 @@
-import { VNode } from "./vdom";
+import { VDom, VNode } from "./vdom";
 
 type PatchType = "CREATE" | "REPLACE" | "PROPS" | "TEXT";
 
@@ -51,7 +51,7 @@ function applyPatch(element: HTMLElement, patch: Patch) {
   switch (patch.type) {
     case "CREATE": {
       if (patch.vNode) {
-        element.appendChild(patch.vNode.render());
+        element.appendChild(VDom.renderVNode(patch.vNode));
       }
       break;
     }
@@ -59,7 +59,7 @@ function applyPatch(element: HTMLElement, patch: Patch) {
       if (!patch.vNode) {
         element.remove();
       } else {
-        element.parentNode?.replaceChild(patch.vNode.render(), element);
+        element.parentNode?.replaceChild(VDom.renderVNode(patch.vNode), element);
       }
       break;
     }

@@ -8,6 +8,7 @@ A typescript-first front-end framework
 
   - [x] vNode: vElement + vText
   - [x] diff + patch
+  - [ ] fiber `What is fiber?`
   - [x] props
   - [x] attr + event
     - event 是否应该拿出来

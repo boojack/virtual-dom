@@ -9,8 +9,4 @@ export class VText {
   constructor(text: string) {
     this.text = text;
   }
-
-  public render(): Text {
-    return document.createTextNode(this.text);
-  }
 }

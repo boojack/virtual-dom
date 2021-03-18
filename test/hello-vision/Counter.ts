@@ -1,5 +1,5 @@
-import { VDom } from "../src/vdom/vdom";
-import { Component } from "../src/view/Component";
+import { VDom } from "../../src/vdom/vdom";
+import { Component } from "../../src/view/Component";
 
 interface Props {}
 

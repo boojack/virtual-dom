@@ -1,5 +1,5 @@
-import { VDom, VNode } from "../src/vdom/vdom";
-import { Component } from "../src/view/Component";
+import { VDom, VNode } from "../../src/vdom/vdom";
+import { Component } from "../../src/view/Component";
 
 interface State {
   now: string;

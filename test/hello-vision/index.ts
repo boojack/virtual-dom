@@ -1,7 +1,7 @@
-import { VDom, VNode } from "../src/vdom/vdom";
+import { VDom, VNode } from "../../src/vdom/vdom";
 import { CounterView } from "./Counter";
 import { TimerView } from "./Timer";
-import { Component } from "../src/view/Component";
+import { Component } from "../../src/view/Component";
 import "./index.css";
 
 const Counter = new CounterView({});

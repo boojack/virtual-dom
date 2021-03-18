@@ -5,7 +5,6 @@ export abstract class Component<Props, State, E> extends View {
   // readonly
   public props: Props;
   public abstract state: State;
-  private vdom?: VNode;
 
   constructor(props: Props) {
     super();
@@ -18,7 +17,6 @@ export abstract class Component<Props, State, E> extends View {
     this.state = state;
 
     VDom.rerender();
-    // patch(preDom as HTMLElement, patches, false);
   }
 
   public destory() {
@@ -32,7 +30,6 @@ export abstract class Component<Props, State, E> extends View {
 
   public doRender(): VNode {
     const vel = this.render();
-    this.vdom = vel;
 
     return vel;
   }
